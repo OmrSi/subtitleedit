@@ -4735,13 +4735,17 @@ namespace Nikse.SubtitleEdit.Forms
                 {
                     if (!string.IsNullOrEmpty(file.OriginalFileName) && File.Exists(file.OriginalFileName))
                     {
-                        dropDownItems.Add(new ToolStripMenuItem(file.FileName + " + " + file.OriginalFileName, null, ReopenSubtitleToolStripMenuItemClick) { Tag = file.FileName });
+                        var recentFileMenuItem = new ToolStripMenuItem(file.FileName + " + " + file.OriginalFileName, null, ReopenSubtitleToolStripMenuItemClick) { Tag = file };
+                        recentFileMenuItem.MouseDown += RecentFileMenuItem_MouseDown;
+                        dropDownItems.Add(recentFileMenuItem);
                     }
                     else
                     {
                         if (!lowerFileNameList.Contains(file.FileName.ToLowerInvariant()))
                         {
-                            dropDownItems.Add(new ToolStripMenuItem(file.FileName, null, ReopenSubtitleToolStripMenuItemClick) { Tag = file.FileName });
+                            var recentFileMenuItem = new ToolStripMenuItem(file.FileName, null, ReopenSubtitleToolStripMenuItemClick) { Tag = file };
+                            recentFileMenuItem.MouseDown += RecentFileMenuItem_MouseDown;
+                            dropDownItems.Add(recentFileMenuItem);
                             lowerFileNameList.Add(file.FileName.ToLowerInvariant());
                         }
                     }
@@ -4772,6 +4776,39 @@ namespace Nikse.SubtitleEdit.Forms
             reopenToolStripMenuItem.Visible = reopenToolStripMenuItem.DropDownItems.Count > 0;
         }
 
+        private void RecentFileMenuItem_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                var selectedRecentFileMenuItem = sender as ToolStripMenuItem;
+                var recentFileEntry = (RecentFileEntry)selectedRecentFileMenuItem?.Tag;
+                if (recentFileEntry?.FileName != _fileName || recentFileEntry?.FileName == _fileName && recentFileEntry?.OriginalFileName != _subtitleOriginalFileName)
+                {
+                    var contextMenu = new ContextMenuStrip(components);
+                    var deleteMenuItem = new ToolStripMenuItem(LanguageSettings.Current.Main.Menu.ContextMenu.Delete);
+                    deleteMenuItem.Click += (o, args) =>
+                    {
+                        Configuration.Settings.RecentFiles.Files.Remove(recentFileEntry);
+                        UpdateRecentFilesUI();
+
+                        if (Configuration.Settings.RecentFiles.Files.Count == 0)
+                        {
+                            fileToolStripMenuItem.DropDown.Close();
+                        }
+                    };
+
+                    UiUtil.FixFonts(deleteMenuItem);
+                    contextMenu.Items.Add(deleteMenuItem);
+                    UiUtil.FixFonts(contextMenu);
+                    fileToolStripMenuItem.DropDown.AutoClose = false;
+                    reopenToolStripMenuItem.DropDown.AutoClose = false;
+                    contextMenu.Show(Cursor.Position);
+                    fileToolStripMenuItem.DropDown.AutoClose = true;
+                    reopenToolStripMenuItem.DropDown.AutoClose = true;
+                }
+            }
+        }
+
         private void RemoveNotExistingFilesFromRecentFilesUI()
         {
             if (!Configuration.Settings.General.ShowRecentFiles || Configuration.Settings.RecentFiles.Files.Count == 0)
@@ -4783,12 +4820,12 @@ namespace Nikse.SubtitleEdit.Forms
             bw.DoWork += (sender, args) =>
             {
                 var recentFilesList = (List<RecentFileEntry>)args.Argument;
-                var notExistingFiles = new List<string>();
+                var notExistingFiles = new List<RecentFileEntry>();
                 foreach (var entry in recentFilesList)
                 {
                     if (!File.Exists(entry.FileName))
                     {
-                        notExistingFiles.Add(entry.FileName);
+                        notExistingFiles.Add(entry);
                     }
                 }
 
@@ -4796,7 +4833,7 @@ namespace Nikse.SubtitleEdit.Forms
             };
             bw.RunWorkerCompleted += (sender, args) =>
             {
-                var notExistingFiles = (List<string>)args.Result;
+                var notExistingFiles = (List<RecentFileEntry>)args.Result;
                 if (notExistingFiles.Count == 0)
                 {
                     return;
@@ -4805,7 +4842,7 @@ namespace Nikse.SubtitleEdit.Forms
                 try
                 {
                     Configuration.Settings.RecentFiles.Files = Configuration.Settings.RecentFiles.Files
-                        .Where(p => !notExistingFiles.Contains(p.FileName)).ToList();
+                        .Where(p => !notExistingFiles.Contains(p)).ToList();
                     if (Configuration.Settings.RecentFiles.Files.Count == 0)
                     {
                         reopenToolStripMenuItem.DropDownItems.Clear();
@@ -4816,7 +4853,7 @@ namespace Nikse.SubtitleEdit.Forms
                         for (var index = reopenToolStripMenuItem.DropDownItems.Count - 1; index >= 0; index--)
                         {
                             ToolStripItem item = reopenToolStripMenuItem.DropDownItems[index];
-                            if (notExistingFiles.Contains((string)item.Tag))
+                            if (notExistingFiles.Contains((RecentFileEntry)item.Tag))
                             {
                                 reopenToolStripMenuItem.DropDownItems.RemoveAt(index);
                             }
