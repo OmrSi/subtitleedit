@@ -31921,8 +31921,8 @@ namespace Nikse.SubtitleEdit.Forms
         private void ShowTranslationProgress()
         {
             if (Configuration.Settings.General.ShowProgress)
-            {
-                if (_subtitleOriginal != null && _subtitleOriginal.Paragraphs.Count > 0)
+            { 
+                if (_subtitle.Paragraphs.Count > 0)
                 {
                     int numberOfNonBlankLines = 0;
                     foreach (var paragraph in _subtitle.Paragraphs)
@@ -31938,21 +31938,6 @@ namespace Nikse.SubtitleEdit.Forms
                     if (!toolStripStatusLabelProgress.Visible)
                     {
                         toolStripStatusLabelProgress.Visible = true;
-                    }
-                }
-                else if (_subtitle.Paragraphs.Count > 0 && !string.IsNullOrWhiteSpace(_videoFileName) && mediaPlayer != null && mediaPlayer.VideoPlayer != null && mediaPlayer.VideoPlayer.Duration > 0)
-                {
-                    var last = _subtitle.Paragraphs.LastOrDefault();
-                    if (last != null && !last.StartTime.IsMaxTime)
-                    {
-                        var subtitleEndSeconds = last.EndTime.TotalSeconds;
-                        var videoEndSeconds = mediaPlayer.VideoPlayer.Duration;
-                        int percent = (int)Math.Round(subtitleEndSeconds * 100.0 / videoEndSeconds);
-                        toolStripStatusLabelProgress.Text = string.Format("{0}% completed", percent);
-                        if (!toolStripStatusLabelProgress.Visible)
-                        {
-                            toolStripStatusLabelProgress.Visible = true;
-                        }
                     }
                 }
                 else
