@@ -799,6 +799,60 @@ namespace Nikse.SubtitleEdit.Forms
 
                     e.SuppressKeyPress = true;
                 }
+                else if (e.KeyData == UiUtil.GetKeys(Configuration.Settings.Shortcuts.MainVideo1FrameLeft))
+                {
+                    if (_isStartSceneActive)
+                    {
+                        if (MediaPlayerStart.VideoPlayer is LibMpvDynamic libMpv)
+                        {
+                            libMpv.GetPreviousFrame();
+                        }
+                        else
+                        {
+                            GoBackSeconds(-1.0 / Configuration.Settings.General.CurrentFrameRate, MediaPlayerStart);
+                        }
+                    }
+                    else
+                    {
+                        if (MediaPlayerEnd.VideoPlayer is LibMpvDynamic libMpv)
+                        {
+                            libMpv.GetPreviousFrame();
+                        }
+                        else
+                        {
+                            GoBackSeconds(-1.0 / Configuration.Settings.General.CurrentFrameRate, MediaPlayerEnd);
+                        }
+                    }
+
+                    e.SuppressKeyPress = true;
+                }
+                else if (e.KeyData == UiUtil.GetKeys(Configuration.Settings.Shortcuts.MainVideo1FrameRight))
+                {
+                    if (_isStartSceneActive)
+                    {
+                        if (MediaPlayerStart.VideoPlayer is LibMpvDynamic libMpv)
+                        {
+                            libMpv.GetNextFrame();
+                        }
+                        else
+                        {
+                            GoBackSeconds(1.0 / Configuration.Settings.General.CurrentFrameRate, MediaPlayerStart);
+                        }
+                    }
+                    else
+                    {
+                        if (MediaPlayerEnd.VideoPlayer is LibMpvDynamic libMpv)
+                        {
+                            libMpv.GetNextFrame();
+                        }
+                        else
+                        {
+                            GoBackSeconds(1.0 / Configuration.Settings.General.CurrentFrameRate, MediaPlayerEnd);
+                        }
+                    }
+
+                    e.SuppressKeyPress = true;
+                }
             }
         }
 
