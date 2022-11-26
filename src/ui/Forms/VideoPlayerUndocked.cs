@@ -237,6 +237,7 @@ namespace Nikse.SubtitleEdit.Forms
             WindowState = FormWindowState.Maximized;
             _videoPlayerContainer.FontSizeFactor = 1.5F;
             _videoPlayerContainer.SetSubtitleFont();
+            _videoPlayerContainer.ResizeFontPreview(); 
             _videoPlayerContainer.SubtitleText = string.Empty;
             _videoPlayerContainer.ShowFullScreenControls();
             _videoPlayerContainer.SetFullFixed();
