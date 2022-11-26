@@ -1214,6 +1214,7 @@ namespace Nikse.SubtitleEdit.Controls
             _pictureBoxFastForwardOver.Left = _pictureBoxFastForward.Left;
 
             ResizeTimeCode();
+            ResizeFontPreview();
 
             _labelVideoPlayerName.Left = Width - _labelVideoPlayerName.Width - 3;
             DeleteTempMpvFileName();
@@ -1239,6 +1240,23 @@ namespace Nikse.SubtitleEdit.Controls
                 {
                     _labelTimeCode.Font = new Font(_labelTimeCode.Font.Name, _labelTimeCode.Font.Size - 1);
                 }
+            }
+        }
+
+        public void ResizeFontPreview()
+        {
+            if (_videoPlayer != null && !(_videoPlayer is LibMpvDynamic && Configuration.Settings.General.MpvHandlesPreviewText))
+            {
+                var calculatedHeight = TextRenderer.MeasureText("Hey.\nHey.", TextBox.Font).Height;
+                var height = Configuration.Settings.General.Undocked ? TextBox.Height + _panelControls.Height : TextBox.Height;
+                var font = new Font(TextBox.Font, TextBox.Font.Style);
+                while (calculatedHeight > height)
+                {
+                    font = new Font(font.FontFamily, font.Size - 1, font.Style);
+                    calculatedHeight = TextRenderer.MeasureText("Hey.\nHey.", font).Height;
+                }
+
+                TextBox.Font = font;
             }
         }
 
