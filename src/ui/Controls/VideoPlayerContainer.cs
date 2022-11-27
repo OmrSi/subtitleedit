@@ -1854,7 +1854,7 @@ namespace Nikse.SubtitleEdit.Controls
                         seconds = 0;
                     }
 
-                    displayTimeCode = $"-{TimeCode.FromSeconds(seconds).ToDisplayString()}";
+                    displayTimeCode = $"-{TimeCode.FromSeconds(seconds).ToDisplayString()} / {dur.ToDisplayString()}";
                 }
             }
 
