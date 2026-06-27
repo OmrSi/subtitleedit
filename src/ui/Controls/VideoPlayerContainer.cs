@@ -1938,7 +1938,7 @@ namespace Nikse.SubtitleEdit.Controls
                         seconds = 0;
                     }
 
-                    displayTimeCode = $"-{TimeCode.FromSeconds(seconds).ToDisplayString()} SMPTE";
+                    displayTimeCode = $"-{TimeCode.FromSeconds(seconds).ToDisplayString()} / {dur.ToDisplayString()} SMPTE";
                 }
             }
             else
@@ -1956,7 +1956,7 @@ namespace Nikse.SubtitleEdit.Controls
                         seconds = 0;
                     }
 
-                    displayTimeCode = $"-{TimeCode.FromSeconds(seconds).ToDisplayString()}";
+                    displayTimeCode = $"-{TimeCode.FromSeconds(seconds).ToDisplayString()} / {dur.ToDisplayString()}";
                 }
             }
 
