@@ -66,6 +66,25 @@ namespace Nikse.SubtitleEdit.Controls
                 UiUtil.ApplyControlBackspace(this);
                 e.SuppressKeyPress = true;
             }
+            else if (e.KeyCode == Keys.Up && SelectionLength == 0)
+            {
+                var currentLine = GetLineFromCharIndex(SelectionStart);
+                if (currentLine == 0)
+                {
+                    SelectionStart = GetFirstCharIndexFromLine(currentLine);
+                    e.SuppressKeyPress = true;
+                }
+            }
+            else if (e.KeyCode == Keys.Down && SelectionLength == 0)
+            {
+                var currentLine = GetLineFromCharIndex(SelectionStart);
+                if (currentLine == Lines.Length - 1)
+                {
+                    var lineStart = GetFirstCharIndexFromLine(currentLine);
+                    SelectionStart = lineStart + Lines[currentLine].Length;
+                    e.SuppressKeyPress = true;
+                }
+            }
             //else if (e.Modifiers == Keys.Shift && e.KeyCode == Keys.Up)
             //{
             //    var line = GetLineFromCharIndex(SelectionStart);
